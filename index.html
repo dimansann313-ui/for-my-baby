@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Piggy ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500&display=swap');
+
+        body {
+            margin: 0; height: 100vh; display: flex; justify-content: center;
+            align-items: center; background: linear-gradient(135deg, #ffeef2 0%, #ffdde1 100%);
+            font-family: 'Quicksand', sans-serif; overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(214, 51, 132, 0.2); text-align: center;
+            max-width: 90%; width: 450px; z-index: 10; border: 2px solid #ffb6c1;
+        }
+
+        .image-box {
+            width: 100%; height: 300px; margin-bottom: 20px; display: flex;
+            justify-content: center; align-items: center; overflow: hidden;
+            border-radius: 15px; background: #fff; position: relative;
+        }
+
+        .image-box img, .image-box video {
+            max-width: 100%; max-height: 100%; object-fit: contain;
+            position: absolute; transition: opacity 1s ease-in-out; opacity: 0;
+        }
+
+        .zoom-active { transform: scale(1.3); transition: transform 5s ease-in-out; opacity: 1 !important; }
+
+        h1 { 
+            color: #d63384; font-size: 1.3rem; margin-bottom: 20px;
+            font-family: 'Dancing Script', cursive; line-height: 1.4; min-height: 80px;
+        }
+
+        .btn-container { display: flex; justify-content: center; gap: 20px; min-height: 80px; }
+
+        button {
+            padding: 14px 30px; font-size: 1.1rem; border: none; border-radius: 50px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+
+        #yesBtn { background: linear-gradient(45deg, #ff4b2b, #ff416c); color: white; }
+        #noBtn { background-color: #adb5bd; color: white; }
+
+        .heart { position: absolute; animation: float 4s linear infinite; z-index: 1; }
+        @keyframes float {
+            0% { transform: translateY(105vh) scale(0); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="heart-container"></div>
+
+    <div class="container" id="mainBox">
+        <div class="image-box" id="mediaBox">
+            <img id="displayImg" src="us.jpg" style="opacity: 1;">
+            <video id="displayVid" playsinline></video>
+        </div>
+        <h1 id="displayText">There's a secret message for Piggy,<br>Do you wish to continue?</h1>
+        
+        <div class="btn-container" id="btnArea">
+            <button id="yesBtn" onclick="nextStep()">Yes</button>
+            <button id="noBtn" style="display:none;" onclick="noClicked()">No</button>
+        </div>
+    </div>
+
+    <audio id="loveSong" src="music.mp3" loop></audio>
+
+    <script>
+        let step = 1;
+        let yesScale = 1;
+        
+        // 1. MAKE SURE THESE FILENAMES ARE EXACTLY CORRECT
+        const slideshowItems = [
+            {type: 'image', src: 'us3.jpg' },
+            { type: 'image', src: 'us4.jpg' },
+            { type: 'image', src: 'us6.jpg' },
+            { type: 'image', src: 'us7.jpg' },
+            { type: 'video', src: 'us5.mp4' }, // Make sure this file is in your folder!
+            { type: 'image', src: 'us9.jpg' },
+            { type: 'image', src: 'us10.jpg'},
+            { type: 'video', src: 'us11.mp4' },
+            { type: 'video', src: 'us12.mp4' }
+        ];
+
+        // Hearts Animation
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = ['❤️', '💖', '🐷'][Math.floor(Math.random()*3)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            document.getElementById('heart-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }, 300);
+
+        function nextStep() {
+            if (step === 1) {
+                document.getElementById('displayText').innerHTML = "Bevi, Will you be my Valentine?";
+                document.getElementById('noBtn').style.display = 'block';
+                step = 2;
+            } else {
+                revealSecret();
+            }
+        }
+
+        function noClicked() {
+            yesScale += 0.5;
+            document.getElementById('yesBtn').style.transform = `scale(${yesScale})`;
+            const noBtn = document.getElementById('noBtn');
+            noBtn.style.opacity = (parseFloat(noBtn.style.opacity) || 1) - 0.2;
+            if (noBtn.style.opacity <= 0.1) noBtn.style.display = 'none';
+        }
+
+        function revealSecret() {
+            document.getElementById('btnArea').style.display = 'none';
+            const img = document.getElementById('displayImg');
+            img.style.opacity = 0;
+            
+            setTimeout(() => {
+                img.src = "us2.jpg";
+                img.classList.add('zoom-active');
+                
+                // Play Music
+                const music = document.getElementById('loveSong');
+                music.play();
+
+                // Typing Message
+                const textEl = document.getElementById('displayText');
+                const msg = "OMGGG,Yeiiii! you said yessssss! Pati just know that you'll always be my valentine forever and ever. Your my first and the last and I love you forever my piggy! ❤️";
+                textEl.innerHTML = "";
+                
+                let i = 0;
+                const typing = setInterval(() => {
+                    if (i < msg.length) {
+                        textEl.innerHTML += msg.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typing);
+                        // WAIT 5 SECONDS FOR ZOOM, THEN START
+                        setTimeout(startSlideshow, 5000);
+                    }
+                }, 50);
+            }, 500);
+        }
+
+        let slideIdx = 0;
+        function startSlideshow() {
+            const img = document.getElementById('displayImg');
+            const vid = document.getElementById('displayVid');
+            
+            function showNext() {
+                const item = slideshowItems[slideIdx];
+                img.style.opacity = 0;
+                vid.style.opacity = 0;
+                vid.pause();
+                img.classList.remove('zoom-active');
+
+                setTimeout(() => {
+                    if (item.type === 'image') {
+                        vid.style.display = 'none';
+                        img.style.display = 'block';
+                        img.src = item.src;
+                        img.style.opacity = 1;
+                        slideIdx = (slideIdx + 1) % slideshowItems.length;
+                        setTimeout(showNext, 4000);
+                    } else {
+                        img.style.display = 'none';
+                        vid.style.display = 'block';
+                        vid.src = item.src;
+                        vid.style.opacity = 1;
+                        
+                        // Error handling: if video fails, skip it
+                        vid.play().catch(() => {
+                            console.log("Video play blocked, skipping...");
+                            slideIdx = (slideIdx + 1) % slideshowItems.length;
+                            showNext();
+                        });
+
+                        vid.onended = () => {
+                            slideIdx = (slideIdx + 1) % slideshowItems.length;
+                            showNext();
+                        };
+                    }
+                }, 1000);
+            }
+            showNext();
+        }
+    </script>
+</body>
+</html>
